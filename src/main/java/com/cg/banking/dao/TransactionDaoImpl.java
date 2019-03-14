@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import com.cg.banking.bean.CustomerDetails;
 import com.cg.banking.utility.DatabaseConnection;
@@ -14,20 +15,38 @@ public class TransactionDaoImpl implements TransactionDao {
 	Connection connection = db.database();
 
 	public CustomerDetails withdraw(CustomerDetails customerDetails) {
-		
-		double bal = customerDetails.getBalance();
-		if (bal >= customerDetails.getAmount()) {
-			bal -= customerDetails.getAmount();
-			try {
-				PreparedStatement stmt = connection
-						.prepareStatement("update customer_details set balance = ? where account_no = ?");
-				stmt.setInt(2, customerDetails.getAccountNo());
-				stmt.setInt(1, (int) bal);
-				stmt.executeUpdate();
-				customerDetails.setBalance(bal);
-			} catch (SQLException e) {
-//				e.printStackTrace();
-			}	
+		Statement stmt;
+		try {
+			stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery("select * from customer_details");
+			int i = 0;
+			while (rs.next()) {
+				if (rs.getInt(1) == customerDetails.getAccountNo()) {
+					double bal = customerDetails.getBalance();
+					if (bal >= customerDetails.getAmount()) {
+						bal -= customerDetails.getAmount();
+						try {
+							PreparedStatement stmt1 = connection
+									.prepareStatement("update customer_details set balance = ? where account_no = ?");
+							stmt1.setInt(2, customerDetails.getAccountNo());
+							stmt1.setInt(1, (int) bal);
+							stmt1.executeUpdate();
+							customerDetails.setBalance(bal);
+							i++;
+							break;
+						} catch (SQLException e) {
+//							e.printStackTrace();
+						}	
+					}
+					
+				}
+			}
+			if (i != 1) {
+				customerDetails.setFirstName(null);
+			}
+			// connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 		return customerDetails;
 	}
