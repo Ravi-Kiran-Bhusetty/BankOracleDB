@@ -7,4 +7,3 @@ public interface CustomerInformationService {
 	public CustomerDetails login(CustomerDetails customerDetails);
 	public int customerRegistration(CustomerDetails customerDetails);
 }
-

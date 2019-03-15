@@ -37,7 +37,8 @@ public class MainUI {
 				System.out.println("Enter the address");
 				customerDetails.setAddress(sc.next());
 				int accNo = customerInformationService.customerRegistration(customerDetails);
-				System.out.println("Registration Successful. Account no: " + accNo);
+				if (accNo != -1)
+					System.out.println("Registration Successful. Account no: " + accNo);
 				System.out.println("Redirecting to login");
 				// break;
 
@@ -47,7 +48,7 @@ public class MainUI {
 				System.out.println("Enter password");
 				customerDetails.setPassword(sc.next());
 				customerDetails1 = customerInformationService.login(customerDetails);
-				if (customerDetails1.getFirstName() != null) {
+				if (customerDetails1 != null) {
 					System.out.println("Welcome " + customerDetails1.getFirstName());
 					do {
 						System.out.println(
@@ -55,35 +56,36 @@ public class MainUI {
 						int key = sc.nextInt();
 						switch (key) {
 						case 1:
-//							System.err.println(customerDetails1.getAccountNo());
-							System.out.println("Enter withdraw amount");							
+							System.out.println("Enter withdraw amount");
 							customerDetails1.setAmount(sc.nextDouble());
 							customerDetails1 = transactionService.withdraw(customerDetails1);
-							System.out.println("Remaining balance: "+customerDetails1.getBalance());
+							if(customerDetails1 != null)
+							System.out.println("Remaining balance: " + customerDetails1.getBalance());
 							break;
 
 						case 2:
 							System.out.println("Enter deposit amount");
 							customerDetails1.setAmount(sc.nextDouble());
 							customerDetails1 = transactionService.deposit(customerDetails1);
-							System.out.println("Remaining balance: "+customerDetails1.getBalance());
+							if(customerDetails1 != null)
+							System.out.println("Remaining balance: " + customerDetails1.getBalance());
 							break;
 
 						case 3:
 							customerDetails1 = transactionService.showBalance(customerDetails1);
-							System.out.println("Your balance is: "+customerDetails1.getBalance());
+							System.out.println("Your balance is: " + customerDetails1.getBalance());
 							break;
 
 						case 4:
 							System.out.println("Enter the fund amount to transfer");
 							customerDetails1.setAmount(sc.nextDouble());
 							System.out.println("Enter the account number to which fund has to be transferred");
-							int acc = sc.nextInt();
-							int previousAccount = customerDetails1.getAccountNo();
-							customerDetails1 = transactionService.withdraw(customerDetails1);
-							customerDetails1.setAccountNo(acc);
-							customerDetails1 = transactionService.deposit(customerDetails1);
-							customerDetails1.setAccountNo(previousAccount);
+							customerDetails1.setToAccountNo(sc.nextInt());
+							customerDetails1 = transactionService.fundTransfer(customerDetails1);
+							if(customerDetails1 != null)
+							System.out.println("Fund transfer successful from " + customerDetails1.getAccountNo()
+									+ " to " + customerDetails1.getToAccountNo() + ". Amount transferred: "
+									+ customerDetails.getAmount());
 							break;
 
 						case 5:

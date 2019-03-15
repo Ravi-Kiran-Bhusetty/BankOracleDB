@@ -17,11 +17,11 @@ public class CustomerInformationDaoImpl implements CustomerInformationDao {
 	Connection connection = db.database();
 	
 	public CustomerDetails login(CustomerDetails customerDetails) {
+		int i = 0;
 		Statement stmt;
 		try {
 			stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery("select * from customer_details");
-			int i = 0;
 			while (rs.next()) {
 				if (rs.getInt(1) == customerDetails.getAccountNo() && rs.getString(5).equals(customerDetails.getPassword())) {
 					customerDetails.setBalance(rs.getInt(10));
@@ -30,15 +30,13 @@ public class CustomerInformationDaoImpl implements CustomerInformationDao {
 					break;
 				}
 			}
-
-			if (i != 1) {
-				customerDetails.setFirstName(null);
-			}
-			// connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		if(i == 1)
 		return customerDetails;
+		else
+			return null;
 	}
 
 	public int customerRegistration(CustomerDetails customerDetails) {
